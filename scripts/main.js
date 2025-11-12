@@ -1,9 +1,10 @@
-/* Nebula Starter main.js
-   - Basic widget registry
-   - Drag / resize
-   - Persist layout in localStorage
-   - Theme toggle, add widget menu, export/import
-*/
+/* RetroBoard + Nebula Workspace main.js */
+
+import { typeEffect, randomFlicker } from "./utils.js";
+import { initUI } from "./ui.js";
+import { initWidgets } from "./widgets.js";
+import { loadSettings } from "./settings.js";
+import { restoreLayout } from "./storage.js";
 
 (() => {
   const STORE_KEY = 'nebula:v1';
@@ -21,7 +22,7 @@
 
   window.Nebula = {
     widgetsRegistry: {},
-    layout: { widgets: [], theme: 'dark' },
+    layout: { widgets: [], theme: 'green' },
     registerWidget: function(widget){
       this.widgetsRegistry[widget.id] = widget;
       // add to menu UI
@@ -48,7 +49,43 @@
   // load saved layout
   Nebula.load();
 
-  // render saved widgets
+  // Set theme immediately for RetroBoard
+  const savedTheme = Nebula.layout.theme || 'green';
+  document.body.setAttribute('data-theme', savedTheme);
+  if(document.getElementById('theme')) document.getElementById('theme').value = savedTheme;
+
+  // -------------------
+  // Boot animation
+  // -------------------
+  async function bootAnimation() {
+    const container = document.querySelector(".main");
+    container.innerHTML = "";
+    const bootMessages = [
+      "Initializing RetroBoard v1.0...",
+      "Loading kernel modules...",
+      "Checking system integrity...",
+      "Activating terminal interface...",
+      "Welcome, Operator."
+    ];
+    for (let msg of bootMessages) {
+      const line = document.createElement("div");
+      line.className = "boot-line";
+      container.appendChild(line);
+      await typeLine(line, msg, 50);
+      await wait(300);
+    }
+
+    container.querySelectorAll(".boot-line").forEach(line => {
+      setInterval(() => randomFlicker(line), 200);
+    });
+
+    await wait(800);
+    container.innerHTML = ""; // clear boot text
+  }
+
+  // -------------------
+  // Widget logic
+  // -------------------
   function renderAll(){
     stage.innerHTML = '';
     (Nebula.layout.widgets || []).forEach(w => {
@@ -56,7 +93,6 @@
     });
   }
 
-  // create DOM from widget config
   function createWidgetEl(cfg){
     const def = Nebula.widgetsRegistry[cfg.id];
     if(!def) return;
@@ -106,17 +142,14 @@
   }
 
   function saveInstanceCfg(el, cfg){
-    // merge current style into cfg and save to Nebula.layout
-    const rect = el.getBoundingClientRect();
-    const stageRect = stage.getBoundingClientRect();
-    const x = el.offsetLeft;
-    const y = el.offsetTop;
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
-    const id = cfg.instanceId;
-    const idx = Nebula.layout.widgets.findIndex(it => it.instanceId === id);
+    const idx = Nebula.layout.widgets.findIndex(it => it.instanceId === cfg.instanceId);
     if(idx >= 0){
-      Nebula.layout.widgets[idx] = Object.assign({}, cfg, {x,y,w,h});
+      Nebula.layout.widgets[idx] = Object.assign({}, cfg, {
+        x: el.offsetLeft,
+        y: el.offsetTop,
+        w: el.offsetWidth,
+        h: el.offsetHeight
+      });
       Nebula.save();
     }
   }
@@ -138,7 +171,9 @@
     renderAll();
   }
 
-  // drag implementation (basic)
+  // -------------------
+  // Drag & Resize helpers
+  // -------------------
   function makeDraggable(el, handle){
     handle.addEventListener('pointerdown', startDrag);
     let startX, startY, origX, origY, dragging=false;
@@ -154,7 +189,6 @@
       if(!dragging) return;
       let nx = origX + (e.clientX - startX);
       let ny = origY + (e.clientY - startY);
-      // bounds
       nx = Math.max(6, nx); ny = Math.max(6, ny);
       el.style.left = nx + 'px';
       el.style.top = ny + 'px';
@@ -162,14 +196,11 @@
     function onUp(e){
       dragging=false;
       document.removeEventListener('pointermove', onMove);
-      // save layout
-      const instanceId = el.dataset.wid;
-      const cfg = Nebula.layout.widgets.find(w => w.instanceId === instanceId);
+      const cfg = Nebula.layout.widgets.find(w => w.instanceId === el.dataset.wid);
       if(cfg){ cfg.x = el.offsetLeft; cfg.y = el.offsetTop; Nebula.save(); }
     }
   }
 
-  // resize implementation
   function makeResizable(el, grip){
     grip.addEventListener('pointerdown', startResize);
     let startW, startH, startX, startY;
@@ -189,40 +220,60 @@
     }
     function onUp(e){
       document.removeEventListener('pointermove', onMove);
-      // save
-      const instanceId = el.dataset.wid;
-      const cfg = Nebula.layout.widgets.find(w => w.instanceId === instanceId);
+      const cfg = Nebula.layout.widgets.find(w => w.instanceId === el.dataset.wid);
       if(cfg){ cfg.w = el.offsetWidth; cfg.h = el.offsetHeight; Nebula.save(); }
     }
   }
 
-  // UI: add menu
-  function showMenu(){
-    menu.classList.remove('hidden');
-    // populate list done by registerWidget
-  }
+  // -------------------
+  // Menu & Palette
+  // -------------------
+  function showMenu(){ menu.classList.remove('hidden'); }
   function hideMenu(){ menu.classList.add('hidden'); }
 
-  btnAdd.onclick = () => {
-    if(menu.classList.contains('hidden')) showMenu(); else hideMenu();
-  };
+  btnAdd.onclick = () => { menu.classList.contains('hidden') ? showMenu() : hideMenu(); };
 
-  // theme toggle
+  function showPalette(){ palette.classList.remove('hidden'); paletteSearch.focus(); }
+  function hidePalette(){ palette.classList.add('hidden'); paletteSearch.value=''; }
+
+  document.addEventListener('keydown', (e)=>{
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); showPalette(); }
+    if(e.key === 'Escape'){ hideMenu(); hidePalette(); }
+  });
+
+  paletteSearch.addEventListener('input', ()=>{
+    const q = paletteSearch.value.toLowerCase();
+    Array.from(paletteList.children).forEach(item=>{
+      item.style.display = item.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+    });
+  });
+
+  // -------------------
+  // Theme toggle
+  // -------------------
   btnTheme.onclick = () => {
-    document.body.classList.toggle('theme-dark');
-    document.body.classList.toggle('theme-light');
-    Nebula.layout.theme = document.body.classList.contains('theme-dark') ? 'dark' : 'light';
+    const current = document.body.getAttribute('data-theme');
+    let next;
+    if(current==='green') next='amber';
+    else if(current==='amber') next='cyan';
+    else next='green';
+    document.body.setAttribute('data-theme', next);
+    Nebula.layout.theme = next;
     Nebula.save();
+    if(document.getElementById('theme')) document.getElementById('theme').value = next;
   };
 
-  // export / import
+  // -------------------
+  // Import / Export
+  // -------------------
   btnExport.onclick = () => {
     const blob = new Blob([JSON.stringify(Nebula.layout,null,2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'nebula-layout.json';
+    a.href = url; a.download = 'retroboard-layout.json';
     a.click(); URL.revokeObjectURL(url);
   };
+
   btnImport.onclick = ()=> fileInput.click();
   fileInput.onchange = (e)=>{
     const f = e.target.files[0];
@@ -239,87 +290,30 @@
     reader.readAsText(f);
   };
 
-  // palette
-  function showPalette(){ palette.classList.remove('hidden'); paletteSearch.focus(); }
-  function hidePalette(){ palette.classList.add('hidden'); paletteSearch.value=''; }
-  document.addEventListener('keydown', (e)=>{
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); showPalette(); }
-    if(e.key === 'Escape'){ hidePalette(); hideMenu(); hidePalette(); }
-  });
+  // -------------------
+  // Init
+  // -------------------
+  async function init(){
+    await bootAnimation();
+    renderAll();
+    initUI();
+    initWidgets();
+  }
 
-  paletteSearch.addEventListener('input', ()=>{
-    const q = paletteSearch.value.toLowerCase();
-    Array.from(paletteList.children).forEach(item=>{
-      item.style.display = item.textContent.toLowerCase().includes(q) ? 'block' : 'none';
-    });
-  });
+  init();
 
-  // init render
-  renderAll();
-
-  // small helper: expose a way for widgets to update saved cfg
-  window.__nebulaSaveInstance = function(el, cfg){
-    saveInstanceCfg(el, cfg);
-  };
+  // expose helper for widgets
+  window.__nebulaSaveInstance = saveInstanceCfg;
 
 })();
 
-import { typeEffect, randomFlicker } from "./utils.js";
-import { initUI } from "./ui.js";
-import { initWidgets } from "./widgets.js";
-import { loadSettings } from "./settings.js";
-import { restoreLayout } from "./storage.js";
-
-window.addEventListener("DOMContentLoaded", async () => {
-  console.log("%c[RetroBoard] Booting system...", "color:#00ff66");
-
-  const container = document.querySelector(".main");
-  container.innerHTML = "";
-
-  // Boot sequence messages
-  const messages = [
-    "Initializing RetroBoard v1.0...",
-    "Loading kernel modules...",
-    "Checking system integrity...",
-    "Activating terminal interface...",
-    "Welcome, Operator.",
-  ];
-
-  for (let msg of messages) {
-    const line = document.createElement("div");
-    line.className = "boot-line";
-    container.appendChild(line);
-    await typeLine(line, msg, 50);
-    await wait(300);
-  }
-
-  // Optional flicker effect
-  container.querySelectorAll(".boot-line").forEach((line) => {
-    setInterval(() => randomFlicker(line), 200);
-  });
-
-  await wait(800);
-
-  // Transition to dashboard
-  container.innerHTML = "";
-  await loadSettings();
-  restoreLayout();
-  initUI();
-  initWidgets();
-
-  console.log("%c[RetroBoard] Ready.", "color:#00ff66");
-});
-
-// Utility functions
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function typeLine(el, text, speed) {
-  return new Promise((resolve) => {
-    typeEffect(el, text, speed);
-    const totalTime = text.length * speed + 50;
-    setTimeout(resolve, totalTime);
+// -------------------
+// Boot helpers
+// -------------------
+function wait(ms){ return new Promise(resolve=>setTimeout(resolve, ms)); }
+function typeLine(el, text, speed){
+  return new Promise(resolve=>{
+    typeEffect(el,text,speed);
+    setTimeout(resolve,text.length*speed+50);
   });
 }
-
