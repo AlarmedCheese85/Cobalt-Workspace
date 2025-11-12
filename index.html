@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nebula Workspace — Starter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="theme-color" content="#0f0f10">
+</head>
+<body class="theme-dark">
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">Nebula Workspace</div>
+      <div class="controls">
+        <button id="btn-add" title="Add widget">＋ Add</button>
+        <button id="btn-theme" title="Toggle theme">Theme</button>
+        <button id="btn-import" title="Import layout">Import</button>
+        <button id="btn-export" title="Export layout">Export</button>
+      </div>
+    </header>
+
+    <main id="stage" class="stage"></main>
+
+    <div id="palette" class="palette hidden">
+      <input id="palette-search" placeholder="Command palette — type to search (Esc to close)"/>
+      <div id="palette-list" class="palette-list"></div>
+    </div>
+
+    <div id="widget-menu" class="menu hidden">
+      <div class="menu-title">Add widget</div>
+      <div class="menu-list" id="menu-list"></div>
+    </div>
+
+    <input id="file-input" type="file" accept="application/json" class="hidden" />
+    <footer class="footer">Press <kbd>Ctrl+K</kbd> for command palette • Layout saved locally</footer>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/widgets/notes.js"></script>
+  <script src="js/widgets/todo.js"></script>
+  <script src="js/widgets/clock.js"></script>
+</body>
+</html>
