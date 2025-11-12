@@ -16,33 +16,61 @@
 
   <meta name="theme-color" content="#0c0c0c">
 </head>
-<body>
-  <header>
-    <h1>RetroBoard</h1>
+<body class="theme-green">
+
+  <!-- Topbar / Header -->
+  <header class="topbar">
+    <h1 class="brand">RetroBoard</h1>
+    <div class="controls">
+      <button id="btn-add" title="Add widget">＋ Add</button>
+      <button id="btn-theme" title="Toggle theme">Theme</button>
+      <button id="btn-import" title="Import layout">Import</button>
+      <button id="btn-export" title="Export layout">Export</button>
+    </div>
+
     <div class="theme-switcher">
       <label for="theme">Theme:</label>
       <select id="theme">
-        <option value="green">Green</option>
+        <option value="green" selected>Green</option>
         <option value="amber">Amber</option>
         <option value="cyan">Cyan</option>
       </select>
     </div>
   </header>
 
-  <main class="main"></main>
+  <!-- Main Dashboard Area -->
+  <main class="main" id="stage"></main>
 
-  <!-- Footer (optional) -->
+  <!-- Command Palette -->
+  <div id="palette" class="palette hidden">
+    <input id="palette-search" placeholder="Command palette — type to search (Esc to close)"/>
+    <div id="palette-list" class="palette-list"></div>
+  </div>
+
+  <!-- Widget Add Menu -->
+  <div id="widget-menu" class="menu hidden">
+    <div class="menu-title">Add widget</div>
+    <div class="menu-list" id="menu-list"></div>
+  </div>
+
+  <!-- File Input (Hidden) -->
+  <input id="file-input" type="file" accept="application/json" class="hidden" />
+
+  <!-- Footer -->
   <footer class="footer">
     Press <kbd>Ctrl+K</kbd> for command palette • Layout saved locally
   </footer>
 
+  <!-- Scanline Overlay for CRT Effect -->
+  <div class="scanline-overlay"></div>
+
   <!-- Scripts -->
-  <script type="module" src="scripts/main.js"></script>
-  <script type="module" src="scripts/widgets.js"></script>
-  <script type="module" src="scripts/ui.js"></script>
-  <script type="module" src="scripts/storage.js"></script>
-  <script type="module" src="scripts/settings.js"></script>
   <script type="module" src="scripts/utils.js"></script>
+  <script type="module" src="scripts/settings.js"></script>
+  <script type="module" src="scripts/storage.js"></script>
+  <script type="module" src="scripts/ui.js"></script>
+  <script type="module" src="scripts/widgets.js"></script>
   <script type="module" src="scripts/theme-toggle.js"></script>
+  <script type="module" src="scripts/main.js"></script>
 </body>
 </html>
