@@ -44,3 +44,39 @@ v0.3	Add Theme customizer + Quick Links.
 v0.4	Command palette + import/export.
 
 v1.0	Full polish (animations, responsive design, shareable themes).
+
+
+Current Project Root:
+dashboard-app/
+│
+├── index.html                # Main entry point (loads the dashboard)
+├── manifest.json             # PWA manifest (for installable web app support)
+├── service-worker.js         # For offline use / caching (optional)
+│
+├── /assets/                  # Static assets (icons, logos, images)
+│   ├── icons/
+│   ├── images/
+│   └── fonts/
+│
+├── /styles/                  # All CSS files
+│   ├── main.css              # Global styles + layout
+│   ├── theme.css             # Theme variables (colors, dark/light modes)
+│   ├── widgets.css           # Styles for widgets / panels
+│   └── animations.css        # Optional for slick transitions
+│
+├── /scripts/                 # All JS logic
+│   ├── main.js               # Entry JS (loads dashboard, applies settings)
+│   ├── ui.js                 # Handles UI components (menus, modals, resizing)
+│   ├── widgets.js            # Logic for widgets (notes, timers, embeds, etc.)
+│   ├── storage.js            # Saves user layout/customizations to localStorage
+│   ├── settings.js           # Handles theme, layout presets, etc.
+│   └── utils.js              # Small helper functions
+│
+├── /components/              # HTML components or templates
+│   ├── widget-template.html  # Base widget structure
+│   ├── navbar.html           # Top bar or side menu layout
+│   └── modal.html            # For settings / customization pop-ups
+│
+└── /data/                    # Optional (user data, configs, sample presets)
+    └── default-layout.json   # Default dashboard layout and widgets
+
