@@ -1,15 +1,6 @@
 @keyframes flicker {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% {
-    opacity: 1;
-  }
-  20%, 24%, 55% {
-    opacity: 0.4;
-  }
-}
-
-@keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.4; }
 }
 
 .flicker {
@@ -20,6 +11,11 @@
   position: absolute;
   width: 100%;
   height: 2px;
-  background: rgba(0, 255, 102, 0.2);
+  background: rgba(0, 255, 102, 0.15);
   animation: scanline 4s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
 }
