@@ -3,53 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nebula Workspace — Starter</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <meta name="theme-color" content="#0f0f10">
+  <title>RetroBoard Workspace</title>
+
+  <!-- Retro Terminal Font -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/widgets.css">
+  <link rel="stylesheet" href="styles/animations.css">
+
+  <meta name="theme-color" content="#0c0c0c">
 </head>
-<body class="theme-dark">
-  <div id="app">
-    <header class="topbar">
-      <div class="brand">Nebula Workspace</div>
-      <div class="controls">
-        <button id="btn-add" title="Add widget">＋ Add</button>
-        <button id="btn-theme" title="Toggle theme">Theme</button>
-        <button id="btn-import" title="Import layout">Import</button>
-        <button id="btn-export" title="Export layout">Export</button>
-      </div>
-  <h1>RetroBoard</h1>
-  <div class="theme-switcher">
-    <label for="theme">Theme:</label>
-    <select id="theme">
-      <option value="green">Green</option>
-      <option value="amber">Amber</option>
-      <option value="cyan">Cyan</option>
-    </select>
-  </div>
-
-    </header>
-
-    <main id="stage" class="stage"></main>
-
-    <div id="palette" class="palette hidden">
-      <input id="palette-search" placeholder="Command palette — type to search (Esc to close)"/>
-      <div id="palette-list" class="palette-list"></div>
+<body>
+  <header>
+    <h1>RetroBoard</h1>
+    <div class="theme-switcher">
+      <label for="theme">Theme:</label>
+      <select id="theme">
+        <option value="green">Green</option>
+        <option value="amber">Amber</option>
+        <option value="cyan">Cyan</option>
+      </select>
     </div>
+  </header>
 
-    <div id="widget-menu" class="menu hidden">
-      <div class="menu-title">Add widget</div>
-      <div class="menu-list" id="menu-list"></div>
-    </div>
+  <main class="main"></main>
 
-    <input id="file-input" type="file" accept="application/json" class="hidden" />
-    <footer class="footer">Press <kbd>Ctrl+K</kbd> for command palette • Layout saved locally</footer>
-  </div>
+  <!-- Footer (optional) -->
+  <footer class="footer">
+    Press <kbd>Ctrl+K</kbd> for command palette • Layout saved locally
+  </footer>
 
-  <script src="js/main.js"></script>
-  <script src="js/widgets/notes.js"></script>
-  <script src="js/widgets/todo.js"></script>
-  <script src="js/widgets/clock.js"></script>
-  <script src="scripts/theme-toggle.js"></script>
+  <!-- Scripts -->
+  <script type="module" src="scripts/main.js"></script>
+  <script type="module" src="scripts/widgets.js"></script>
+  <script type="module" src="scripts/ui.js"></script>
+  <script type="module" src="scripts/storage.js"></script>
+  <script type="module" src="scripts/settings.js"></script>
+  <script type="module" src="scripts/utils.js"></script>
+  <script type="module" src="scripts/theme-toggle.js"></script>
 </body>
 </html>
