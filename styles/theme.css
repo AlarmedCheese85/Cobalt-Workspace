@@ -1,11 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 :root {
+  --font-main: 'VT323', monospace;
+}
+
+/* Default (Green Terminal) */
+body[data-theme="green"] {
   --bg-color: #0c0c0c;
   --text-color: #00ff66;
   --accent-color: #00b84a;
-  --glow-strength: 0 0 6px var(--accent-color);
-  --font-main: 'VT323', monospace;
+  --glow-color: rgba(0, 255, 102, 0.6);
+}
+
+/* Amber Theme */
+body[data-theme="amber"] {
+  --bg-color: #0c0c0c;
+  --text-color: #ffb300;
+  --accent-color: #ff8c00;
+  --glow-color: rgba(255, 179, 0, 0.6);
+}
+
+/* Cyan Theme */
+body[data-theme="cyan"] {
+  --bg-color: #0c0c0c;
+  --text-color: #00ffff;
+  --accent-color: #00b4ff;
+  --glow-color: rgba(0, 255, 255, 0.6);
 }
 
 body {
@@ -13,5 +33,6 @@ body {
   color: var(--text-color);
   font-family: var(--font-main);
   line-height: 1.4;
-  text-shadow: var(--glow-strength);
+  text-shadow: 0 0 8px var(--glow-color);
+  transition: background 0.3s, color 0.3s, text-shadow 0.3s;
 }
