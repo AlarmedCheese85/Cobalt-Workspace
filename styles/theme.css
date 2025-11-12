@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
+/* Default theme variables */
 :root {
   --font-main: 'VT323', monospace;
 }
 
-/* Default (Green Terminal) */
+/* Green Terminal */
 body[data-theme="green"] {
   --bg-color: #0c0c0c;
   --text-color: #00ff66;
@@ -12,7 +13,7 @@ body[data-theme="green"] {
   --glow-color: rgba(0, 255, 102, 0.6);
 }
 
-/* Amber Theme */
+/* Amber Terminal */
 body[data-theme="amber"] {
   --bg-color: #0c0c0c;
   --text-color: #ffb300;
@@ -20,7 +21,7 @@ body[data-theme="amber"] {
   --glow-color: rgba(255, 179, 0, 0.6);
 }
 
-/* Cyan Theme */
+/* Cyan Terminal */
 body[data-theme="cyan"] {
   --bg-color: #0c0c0c;
   --text-color: #00ffff;
@@ -28,11 +29,11 @@ body[data-theme="cyan"] {
   --glow-color: rgba(0, 255, 255, 0.6);
 }
 
+/* Apply variables */
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: var(--font-main);
-  line-height: 1.4;
   text-shadow: 0 0 8px var(--glow-color);
   transition: background 0.3s, color 0.3s, text-shadow 0.3s;
 }
