@@ -58,3 +58,11 @@ header {
 .theme-switcher select:hover {
   background: #181818;
 }
+
+.boot-line {
+  font-family: 'VT323', monospace;
+  color: var(--text-color);
+  text-shadow: 0 0 8px var(--glow-color);
+  margin-bottom: 4px;
+  white-space: pre;
+}
