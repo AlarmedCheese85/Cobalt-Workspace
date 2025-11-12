@@ -263,3 +263,63 @@
   };
 
 })();
+
+import { typeEffect, randomFlicker } from "./utils.js";
+import { initUI } from "./ui.js";
+import { initWidgets } from "./widgets.js";
+import { loadSettings } from "./settings.js";
+import { restoreLayout } from "./storage.js";
+
+window.addEventListener("DOMContentLoaded", async () => {
+  console.log("%c[RetroBoard] Booting system...", "color:#00ff66");
+
+  const container = document.querySelector(".main");
+  container.innerHTML = "";
+
+  // Boot sequence messages
+  const messages = [
+    "Initializing RetroBoard v1.0...",
+    "Loading kernel modules...",
+    "Checking system integrity...",
+    "Activating terminal interface...",
+    "Welcome, Operator.",
+  ];
+
+  for (let msg of messages) {
+    const line = document.createElement("div");
+    line.className = "boot-line";
+    container.appendChild(line);
+    await typeLine(line, msg, 50);
+    await wait(300);
+  }
+
+  // Optional flicker effect
+  container.querySelectorAll(".boot-line").forEach((line) => {
+    setInterval(() => randomFlicker(line), 200);
+  });
+
+  await wait(800);
+
+  // Transition to dashboard
+  container.innerHTML = "";
+  await loadSettings();
+  restoreLayout();
+  initUI();
+  initWidgets();
+
+  console.log("%c[RetroBoard] Ready.", "color:#00ff66");
+});
+
+// Utility functions
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function typeLine(el, text, speed) {
+  return new Promise((resolve) => {
+    typeEffect(el, text, speed);
+    const totalTime = text.length * speed + 50;
+    setTimeout(resolve, totalTime);
+  });
+}
+
